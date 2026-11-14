@@ -35,70 +35,40 @@ function place(ringDeg, drumDeg, ringR, drumR, bow, m) {
 
 export const DEFAULT_WORKS = [
   {
-    title: "Aether AI",
-    subtitle: "Cognitive Workspace & Deep Reasoning",
-    description: "A cognitive workspace engineered for deep systemic research, disciplined reasoning, and structural synthesis with real-time active node synthesis.",
-    image: "Landing Page Assest/Screenshot 2026-10-20 at 7.46.25\u202fPM.png",
-    src: "Landing Page Assest/Screenshot 2026-10-20 at 7.46.25\u202fPM.png",
-    href: "#aether-ai",
-    stats: "Active Node Engine • Systemic Synthesis • Structural Research",
-    tools: ["React", "TypeScript", "Tailwind CSS", "AI Engine"],
-    deliverables: ["Cognitive Workspace UI", "Active Node Telemetry", "Interactive Reasoning Canvas"]
+    title: "Billing Page",
+    image: "Project Images/Billing Page.png",
+    src: "Project Images/Billing Page.png",
+    href: "https://www.figma.com/design/3aKDmsT0bqoQl1R4D5dl0u/Billing-page?node-id=0-1&t=JuJ8wJ0m6EugALdu-1"
   },
   {
-    title: "Aether Protocol",
-    subtitle: "Private Preview & Monolithic Deployment",
-    description: "Exclusive onboarding portal and architectural briefing interface engineered for research scientists, architectural principals, and technical executives.",
-    image: "Landing Page Assest/Screenshot 2026-10-20 at 7.46.43\u202fPM.png",
-    src: "Landing Page Assest/Screenshot 2026-10-20 at 7.46.43\u202fPM.png",
-    href: "#aether-protocol",
-    stats: "Version 4.5.2 • Monolithic Core Stability • Immediate Deployment",
-    tools: ["Next.js", "TypeScript", "Tailwind CSS", "Figma"],
-    deliverables: ["Briefing Reservation Portal", "Monolithic Design System", "Executive Onboarding Flow"]
+    title: "Raisn Website",
+    image: "Project Images/Raisn website.png",
+    src: "Project Images/Raisn website.png",
+    href: "https://raisn.ai/"
   },
   {
-    title: "Afterform S01",
-    subtitle: "Brutalist Campaign & Visual Monograph",
-    description: "A seasonal fashion campaign and visual monograph capturing structural streetwear silhouettes framed against raw monolithic concrete architecture.",
-    image: "Landing Page Assest/Screenshot 2026-10-20 at 7.45.28\u202fPM.png",
-    src: "Landing Page Assest/Screenshot 2026-10-20 at 7.45.28\u202fPM.png",
-    href: "#afterform-s01",
-    stats: "Campaign S01 • Frame Ref: 35mm_Exp_09 • Visual Monograph",
-    tools: ["Next.js", "Tailwind CSS", "Figma", "Lenis Scroll"],
-    deliverables: ["Visual Monograph Experience", "High-Resolution Lookbook", "Seasonal Campaign Direction"]
+    title: "AI Voice Assistant App",
+    image: "Project Images/AI voice assistant app.png",
+    src: "Project Images/AI voice assistant app.png",
+    href: "https://jovial-cat-fabc7f.netlify.app"
   },
   {
-    title: "Afterform System",
-    subtitle: "Brutalist Apparel & Brand Manifesto",
-    description: "A monolithic architectural apparel manifesto stripping garments of emblems and logos, focusing on pure volume, silhouette, and human-concrete alignment.",
-    image: "Landing Page Assest/Screenshot 2026-10-20 at 7.45.46\u202fPM.png",
-    src: "Landing Page Assest/Screenshot 2026-10-20 at 7.45.46\u202fPM.png",
-    href: "#afterform-system",
-    stats: "Tokyo Studio • Berlin Lab • Seoul Showroom",
-    tools: ["React", "Tailwind CSS", "Figma", "GSAP"],
-    deliverables: ["Brand Manifesto Landing Page", "Brutalist Lookbook System", "E-Commerce Catalog Layout"]
+    title: "AI Campaign Manager",
+    image: "Project Images/AI campaign manager.png",
+    src: "Project Images/AI campaign manager.png",
+    href: "https://celebrated-haupia-93df03.netlify.app/"
   },
   {
-    title: "Maison Éléara",
-    subtitle: "Fine Jewellery & Parisian Atelier",
-    description: "An haute jewellery boutique celebrating sculpted contours in heavy fairmined gold born from geological stillness, crafted in Paris Place Vendôme.",
-    image: "Landing Page Assest/Screenshot 2026-10-20 at 7.44.03\u202fPM.png",
-    src: "Landing Page Assest/Screenshot 2026-10-20 at 7.44.03\u202fPM.png",
-    href: "#maison-eleara",
-    stats: "Place Vendôme Atelier • 18k Recycled Gold • Aurelia Torc & Drops",
-    tools: ["Figma", "React", "Tailwind CSS", "High-Precision Typography"],
-    deliverables: ["Fine Jewellery Boutique", "Atelier Concierge Interface", "Artisanal Archive Showcase"]
+    title: "Real Estate Voice Bot",
+    image: "Project Images/Realestate voice bot.png",
+    src: "Project Images/Realestate voice bot.png",
+    href: "https://www.figma.com/design/aONd9W8PQ6x7KKQ7b86tPK/Real-Estate-Voice-bot-app?node-id=0-1&t=pKF4U3XeLuR4svhR-1"
   },
   {
-    title: "Éléara Campaign",
-    subtitle: "Campaign Edition Vol. IX — Sandstone Edit",
-    description: "An organic editorial campaign highlighting sculpted gold signet jewellery set against raw geological sandstone formations, with private salon concierge booking.",
-    image: "Landing Page Assest/Screenshot 2026-10-20 at 7.44.42\u202fPM.png",
-    src: "Landing Page Assest/Screenshot 2026-10-20 at 7.44.42\u202fPM.png",
-    href: "#eleara-campaign",
-    stats: "Campaign Edition Vol. IX • Sandstone Geology • Atelier Concierge",
-    tools: ["WebGL", "Three.js", "Tailwind CSS", "Smooth Scroll"],
-    deliverables: ["Campaign Lookbook Experience", "Private Salon Reservation Portal", "Sensory Art Direction"]
+    title: "RCTCET Website",
+    image: "Project Images/RCTCET website.png",
+    src: "Project Images/RCTCET website.png",
+    href: "https://vermillion-alfajores-ff7861.netlify.app"
   }
 ];
 
@@ -172,14 +142,27 @@ export function initWorksWheel(container, options = {}) {
     // Bottom subtle info badge on card
     const cardInfo = document.createElement("div");
     cardInfo.className = "pointer-events-none absolute left-3.5 bottom-3.5 right-3.5 flex items-center justify-between";
-    cardInfo.innerHTML = `
-      <span class="text-[11px] font-mono tracking-wider text-white drop-shadow-sm font-semibold truncate max-w-[70%]">
-        ${item.title}
-      </span>
-      <span class="bg-white/95 text-neutral-900 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1 group-hover:scale-105 transition-transform">
-        ${action} ↗
-      </span>
-    `;
+    const cardTitle = document.createElement("span");
+    cardTitle.className = "text-[12px] md:text-[13px] font-medium tracking-[0.01em] text-white drop-shadow-sm truncate max-w-[70%]";
+    cardTitle.textContent = item.title;
+    cardInfo.appendChild(cardTitle);
+
+    // View button: a real link to the project, clickable on its own
+    const hasLink = !!(item.href && item.href.startsWith("http"));
+    const viewBtn = document.createElement(hasLink ? "a" : "span");
+    viewBtn.className = "pointer-events-auto cursor-pointer bg-white/95 text-neutral-900 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1 group-hover:scale-105 transition-transform";
+    viewBtn.textContent = `${action} ↗`;
+    if (hasLink) {
+      viewBtn.href = item.href;
+      viewBtn.target = "_blank";
+      viewBtn.rel = "noopener noreferrer";
+      viewBtn.draggable = false;
+      viewBtn.setAttribute("aria-label", `${action} ${item.title} (opens in a new tab)`);
+      // Keep the drum's drag/capture logic from swallowing this click
+      viewBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
+      viewBtn.addEventListener("click", (e) => e.stopPropagation());
+    }
+    cardInfo.appendChild(viewBtn);
     face.appendChild(cardInfo);
 
     card.appendChild(face);
@@ -215,13 +198,13 @@ export function initWorksWheel(container, options = {}) {
 
   // Front-card title
   const titleEl = document.createElement("div");
-  titleEl.className = "pointer-events-none absolute top-1/2 left-[5%] md:left-[7%] -translate-y-1/2 tracking-tight font-black uppercase text-neutral-900 opacity-0 select-none z-10 max-w-[42%] leading-[1.05]";
+  titleEl.className = "pointer-events-none absolute top-1/2 left-[5%] md:left-[7%] -translate-y-1/2 tracking-[-0.02em] font-medium text-neutral-900 opacity-0 select-none z-10 max-w-[42%] leading-[1.1]";
   titleEl.textContent = items[0] ? items[0].title : "";
   section.appendChild(titleEl);
 
   // Side Index List
   const indexList = document.createElement("ol");
-  indexList.className = "text-neutral-500 absolute top-[7%] right-[3%] text-right leading-[1.75] z-20 space-y-0.5 select-none font-mono";
+  indexList.className = "text-neutral-500 absolute top-[7%] right-[3%] text-right leading-[1.75] z-20 space-y-0.5 select-none";
   const indexButtons = [];
 
   items.forEach((item, i) => {
@@ -229,9 +212,9 @@ export function initWorksWheel(container, options = {}) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.textContent = item.title;
-    btn.className = "cursor-pointer transition-all duration-200 text-[11px] md:text-xs tracking-wider outline-none text-neutral-400 hover:text-neutral-900 block ml-auto";
+    btn.className = "cursor-pointer transition-all duration-200 text-[12px] md:text-[13px] tracking-[0.01em] font-normal outline-none text-neutral-400 hover:text-neutral-900 block ml-auto";
     if (i === 0) {
-      btn.className = "cursor-pointer transition-all duration-200 text-[11px] md:text-xs tracking-wider outline-none text-neutral-900 font-bold block ml-auto underline decoration-2 underline-offset-4";
+      btn.className = "cursor-pointer transition-all duration-200 text-[12px] md:text-[13px] tracking-[0.01em] outline-none text-neutral-900 font-semibold block ml-auto underline decoration-2 underline-offset-4";
     }
     btn.addEventListener("click", () => {
       to(i + 1);
@@ -337,15 +320,18 @@ export function initWorksWheel(container, options = {}) {
     isPointerDown = true;
     dragStartY = event.clientY;
     dragDelta = 0;
-    try {
-      stageEl.setPointerCapture(event.pointerId);
-    } catch (_) {}
   });
 
   stageEl.addEventListener("pointermove", (event) => {
     if (!isPointerDown) return;
     const diff = dragStartY - event.clientY;
     dragDelta += Math.abs(diff);
+    // Capture only once a real drag starts, so plain clicks still reach the cards
+    if (dragDelta > 6 && !stageEl.hasPointerCapture(event.pointerId)) {
+      try {
+        stageEl.setPointerCapture(event.pointerId);
+      } catch (_) {}
+    }
     to(target + diff / DRAG_UNITS);
     dragStartY = event.clientY;
   });
@@ -384,9 +370,9 @@ export function initWorksWheel(container, options = {}) {
 
     indexButtons.forEach((btn, idx) => {
       if (idx === near) {
-        btn.className = "cursor-pointer transition-all duration-200 text-[11px] md:text-xs tracking-wider outline-none text-neutral-900 font-bold block ml-auto scale-105 underline decoration-2 underline-offset-4";
+        btn.className = "cursor-pointer transition-all duration-200 text-[12px] md:text-[13px] tracking-[0.01em] outline-none text-neutral-900 font-semibold block ml-auto scale-105 underline decoration-2 underline-offset-4";
       } else {
-        btn.className = "cursor-pointer transition-all duration-200 text-[11px] md:text-xs tracking-wider outline-none text-neutral-400 hover:text-neutral-900 block ml-auto";
+        btn.className = "cursor-pointer transition-all duration-200 text-[12px] md:text-[13px] tracking-[0.01em] font-normal outline-none text-neutral-400 hover:text-neutral-900 block ml-auto";
       }
     });
 
@@ -438,7 +424,9 @@ export function initWorksWheel(container, options = {}) {
           bow,
           m
         );
-        card.style.opacity = m > 0.5 && Math.abs(d) > CULL ? "0" : "1";
+        const culled = m > 0.5 && Math.abs(d) > CULL;
+        card.style.opacity = culled ? "0" : "1";
+        card.style.pointerEvents = culled ? "none" : ""; // hidden cards can't catch clicks
         card.style.zIndex = String(Math.round(100 - Math.abs(d) * 2));
       }
       const face = card ? card.firstElementChild : null;

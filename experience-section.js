@@ -135,19 +135,22 @@ export async function initExperienceSection() {
 
     // 5. Update HUD Phase Title
     if (hudPhase) {
-      if (currentProgress < 0.30) {
+      // Chapter starts (stage 390vw, travel 290vw): 01 ≈ 0.29, 02 ≈ 0.64, 03 ≈ 0.98
+      if (currentProgress < 0.15) {
         hudPhase.textContent = "ORIGIN & FOUNDATIONS";
-      } else if (currentProgress < 0.65) {
-        hudPhase.textContent = "SELF-DIRECTED LEARNING";
-      } else {
+      } else if (currentProgress < 0.47) {
+        hudPhase.textContent = "SELF-DIRECTED LEARNING / FREELANCE";
+      } else if (currentProgress < 0.81) {
         hudPhase.textContent = "FREELANCE / INDEPENDENT";
+      } else {
+        hudPhase.textContent = "PROFESSIONAL";
       }
     }
 
     // 6. Highlight active bottom jump button
     jumpButtons.forEach(btn => {
       const btnTarget = parseFloat(btn.getAttribute('data-target-progress') || '0');
-      const isCurrent = Math.abs(currentProgress - btnTarget) < 0.20;
+      const isCurrent = Math.abs(currentProgress - btnTarget) < 0.17;
       if (isCurrent) {
         btn.classList.add('text-white', 'bg-white/20', 'border-white/40');
         btn.classList.remove('text-neutral-500', 'border-white/5');

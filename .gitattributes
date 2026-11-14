@@ -1,0 +1,12 @@
+# Use LF line endings for all text files, on every OS
+* text=auto eol=lf
+
+# Binary files: never convert
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.zip binary
+*.pdf binary
