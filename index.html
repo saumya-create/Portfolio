@@ -146,6 +146,52 @@
       }
     }
 
+    /* ============================================================
+       PROJECT HIGHLIGHTS — STICKY STACKING CARDS (project-stack.js)
+       ============================================================ */
+    #project-stack {
+      --ps-top: 6rem;
+      --ps-step: 28px;
+      --ps-n: 6;
+    }
+    @media (min-width: 768px) {
+      #project-stack { --ps-top: 8rem; }
+    }
+    .ps-wrap {
+      position: sticky;
+      top: calc(var(--ps-top) + var(--ps-i) * var(--ps-step));
+      /* ~85vh each; trimmed by the card's own offset so every wrapper's bottom lines up
+         and the whole stack releases together (no bunching as the last card exits) */
+      height: calc(85vh - var(--ps-i) * var(--ps-step));
+    }
+    .ps-card {
+      /* Tall enough to feel substantial, short enough that the last (most offset) card still fits on screen */
+      height: clamp(22rem, calc(100vh - var(--ps-top) - (var(--ps-n) - 1) * var(--ps-step) - 1.5rem), 46rem);
+      height: clamp(22rem, calc(100dvh - var(--ps-top) - (var(--ps-n) - 1) * var(--ps-step) - 1.5rem), 46rem);
+      transform-origin: 50% 0;
+      will-change: transform;
+      backface-visibility: hidden;
+      /* Faint top highlight + a soft upward shadow so each card reads as lying on the one beneath */
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 -14px 36px -18px rgba(0, 0, 0, 0.45),
+        0 30px 60px -24px rgba(0, 0, 0, 0.40),
+        0 8px 18px -6px rgba(0, 0, 0, 0.18);
+    }
+    .ps-shade {
+      position: absolute; inset: -1px;
+      border-radius: inherit;
+      background: #050505;
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity;
+    }
+    .ps-tail { height: 20vh; }
+    /* Project Highlights only: soft gray wash that fades into the page background at both edges */
+    .ps-section {
+      background: linear-gradient(180deg, #FAFAFA 0%, #EEEEEF 14%, #E7E7E8 50%, #EEEEEF 86%, #FAFAFA 100%);
+    }
+
     #project-modal {
       transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 380ms cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -696,7 +742,7 @@
                 <!-- Top Perimeter: Refined Monochrome Headline -->
                 <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-white/10 pb-3">
                   <h3 class="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-tight text-white max-w-xl">
-                    TURNING VISIONARY IDEAS INTO FAST, DISTINCTIVE DIGITAL EXPERIENCES
+                    Hi, I am Saumya Mishra.
                   </h3>
                   <span class="text-[10px] font-mono tracking-wider uppercase text-neutral-400 shrink-0 self-end sm:self-auto sm:ml-auto text-right">
                     BASED IN INDIA
@@ -729,9 +775,6 @@
               <p id="sem-date" class="text-xl md:text-2xl text-neutral-300 font-semibold tracking-wider uppercase transition-none drop-shadow">
                 BACKGROUND &amp; VISION
               </p>
-              <p id="sem-scroll-prompt" class="text-neutral-400 font-medium text-xs tracking-widest uppercase transition-none mt-1 drop-shadow">
-                SCROLL TO EXPAND
-              </p>
             </div>
           </div>
 
@@ -745,6 +788,13 @@
             </h2>
           </div>
 
+          <!-- Reveal hint: sits just below the closed card, fades out as the card expands (scroll-expand-media.js) -->
+          <div class="absolute left-0 right-0 top-[calc(50%+196px)] md:top-[calc(50%+216px)] z-10 flex justify-center pointer-events-none">
+            <p id="sem-scroll-prompt" class="text-neutral-400 font-medium text-[10px] md:text-[11px] tracking-widest uppercase transition-none drop-shadow">
+              Scroll with two fingers to reveal
+            </p>
+          </div>
+
         </div>
       </div>
     </div>
@@ -756,9 +806,7 @@
     class="relative w-full bg-[#070709] text-white overflow-visible"
     data-purpose="experience-section"
     id="experience"
-    style="height: 380vh;"
-    string="progress"
-    string-id="experience-journey"
+    style="height: 420vh;"
   >
     <!-- Sticky 100vh Theater / Viewport Window -->
     <div
@@ -786,7 +834,7 @@
       <header class="relative z-30 w-full px-6 md:px-14 pt-6 pb-4 flex items-center justify-between border-b border-white/[0.08] backdrop-blur-md bg-[#070709]/80">
         <div class="flex items-center gap-4">
           <span id="exp-hud-phase" class="text-[11px] font-semibold tracking-widest uppercase text-neutral-400">
-            SELF-DIRECTED LEARNING / FREELANCE
+            ORIGIN &amp; FOUNDATIONS
           </span>
         </div>
 
@@ -803,10 +851,10 @@
         <div
           id="exp-horizontal-stage"
           class="flex items-center h-full will-change-transform transition-none"
-          style="width: 390vw;"
+          style="width: max-content;"
         >
-          <!-- ================= INTRO ENVIRONMENT (0vw - 90vw) ================= -->
-          <div class="exp-panel flex-shrink-0 w-[95vw] md:w-[85vw] px-8 md:px-16 lg:px-24 flex flex-col justify-center">
+          <!-- ================= INTRO ENVIRONMENT ================= -->
+          <div data-exp-phase="ORIGIN &amp; FOUNDATIONS" class="exp-panel flex-shrink-0 w-[95vw] md:w-[85vw] px-8 md:px-16 lg:px-24 flex flex-col justify-center">
             <div class="max-w-3xl">
               <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-white/[0.04] text-[10px] font-semibold tracking-widest uppercase text-neutral-300 mb-6">
                 <span>FOUNDATION & JOURNEY</span>
@@ -820,111 +868,8 @@
             </div>
           </div>
 
-          <!-- ================= CHAPTER 01: LEARNING (90vw - 190vw) ================= -->
-          <div class="exp-panel relative flex-shrink-0 w-[105vw] md:w-[100vw] px-8 md:px-16 lg:px-24 flex flex-col justify-center">
-            <!-- Background Parallax Date Typography -->
-            <div
-              class="exp-date-bg absolute -top-8 right-12 md:right-28 text-[12vw] md:text-[14vw] font-black uppercase text-white/[0.04] tracking-tighter select-none pointer-events-none will-change-transform"
-              data-parallax-factor="0.15"
-            >
-              2023 — 2024
-            </div>
-
-            <div class="relative z-10 max-w-4xl">
-              <!-- Eyebrow & Date -->
-              <div class="flex items-center gap-4 mb-4">
-                <span class="text-xs font-semibold tracking-widest uppercase text-neutral-400">
-                  2023 — 2024
-                </span>
-                <span class="h-[1px] w-12 bg-white/20"></span>
-                <span class="text-xs font-bold tracking-widest uppercase text-white">
-                  SELF-DIRECTED LEARNING / FREELANCE
-                </span>
-              </div>
-
-              <!-- Oversized Typographic Role Title -->
-              <h3 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight text-white leading-[0.92] mb-6">
-                DIGITAL<br>COMMUNICATIONS
-              </h3>
-
-              <!-- Narrative Summary -->
-              <p class="text-sm sm:text-base md:text-lg text-neutral-300 leading-relaxed max-w-2xl mb-8">
-                Led digital communications and visual design initiatives, taking primary ownership of the club’s website design.
-              </p>
-
-              <!-- Milestone Specifications (Hairline Grid) -->
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10 max-w-3xl mb-8">
-                <div>
-                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">MILESTONE 01 — AWARD-WINNING WEBSITE</div>
-                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Led the design of the RCTCET website, which received the Best Website Award for 2023–24.</div>
-                </div>
-                <div>
-                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">MILESTONE 02 — DIGITAL CAMPAIGNS</div>
-                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Created media creatives, promotional banners, and visual assets for club events.</div>
-                </div>
-                <div>
-                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">MILESTONE 03</div>
-                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Served as Digital Communications Director, contributing to the club’s overall digital presence and communication.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ================= CHAPTER 02: FREELANCE (190vw - 290vw) ================= -->
-          <div class="exp-panel relative flex-shrink-0 w-[105vw] md:w-[100vw] px-8 md:px-16 lg:px-24 flex flex-col justify-center">
-            <!-- Background Parallax Date Typography -->
-            <div
-              class="exp-date-bg absolute -top-8 right-12 md:right-28 text-[12vw] md:text-[14vw] font-black uppercase text-white/[0.04] tracking-tighter select-none pointer-events-none will-change-transform"
-              data-parallax-factor="0.15"
-            >
-              2024 — 2025
-            </div>
-
-            <div class="relative z-10 max-w-4xl">
-              <!-- Eyebrow & Date -->
-              <div class="flex items-center gap-4 mb-4">
-                <span class="text-xs font-semibold tracking-widest uppercase text-neutral-400">
-                  2024 — 2025
-                </span>
-                <span class="h-[1px] w-12 bg-white/20"></span>
-                <span class="text-xs font-bold tracking-widest uppercase text-white">
-                  FREELANCE / INDEPENDENT
-                </span>
-                <span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full border border-white/20 text-[10px] font-semibold uppercase text-neutral-300">
-                  COMMERCIAL
-                </span>
-              </div>
-
-              <!-- Oversized Typographic Role Title -->
-              <h3 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight text-white leading-[0.92] mb-6">
-                SOCIAL MEDIA<br>MANAGER
-              </h3>
-
-              <!-- Narrative Summary -->
-              <p class="text-sm sm:text-base md:text-lg text-neutral-300 leading-relaxed max-w-2xl mb-8">
-                Created engaging visual content and social media graphics to strengthen TCET Open Source’s digital presence.
-              </p>
-
-              <!-- Milestone Specifications (Hairline Grid) -->
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10 max-w-3xl mb-8">
-                <div>
-                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">VISUAL CONTENT CREATION</div>
-                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Designed creative social media graphics.</div>
-                </div>
-                <div>
-                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">VIDEO EDITING</div>
-                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Edited short-form social media videos and reels to support digital engagement.</div>
-                </div>
-                <div>
-                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">GRAPHIC DESIGN</div>
-                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Assisted with content development and transformed ideas into engaging visuals.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ================= CHAPTER 03: PROFESSIONAL (290vw - 390vw) ================= -->
-          <div class="exp-panel relative flex-shrink-0 w-[105vw] md:w-[100vw] px-8 md:px-16 lg:px-24 flex flex-col justify-center">
+          <!-- ================= CHAPTER 01: PROFESSIONAL (2026 — PRESENT) ================= -->
+          <div data-exp-phase="PROFESSIONAL" class="exp-panel relative flex-shrink-0 w-[105vw] md:w-[100vw] px-8 md:px-16 lg:px-24 flex flex-col justify-center">
             <!-- Background Parallax Date Typography -->
             <div
               class="exp-date-bg absolute -top-8 right-12 md:right-28 text-[12vw] md:text-[14vw] font-black uppercase text-white/[0.04] tracking-tighter select-none pointer-events-none will-change-transform"
@@ -976,6 +921,109 @@
             </div>
           </div>
 
+          <!-- ================= CHAPTER 02: FREELANCE (2024 — 2025) ================= -->
+          <div data-exp-phase="FREELANCE / INDEPENDENT" class="exp-panel relative flex-shrink-0 w-[105vw] md:w-[100vw] px-8 md:px-16 lg:px-24 flex flex-col justify-center">
+            <!-- Background Parallax Date Typography -->
+            <div
+              class="exp-date-bg absolute -top-8 right-12 md:right-28 text-[12vw] md:text-[14vw] font-black uppercase text-white/[0.04] tracking-tighter select-none pointer-events-none will-change-transform"
+              data-parallax-factor="0.15"
+            >
+              2024 — 2025
+            </div>
+
+            <div class="relative z-10 max-w-4xl">
+              <!-- Eyebrow & Date -->
+              <div class="flex items-center gap-4 mb-4">
+                <span class="text-xs font-semibold tracking-widest uppercase text-neutral-400">
+                  2024 — 2025
+                </span>
+                <span class="h-[1px] w-12 bg-white/20"></span>
+                <span class="text-xs font-bold tracking-widest uppercase text-white">
+                  FREELANCE / INDEPENDENT
+                </span>
+                <span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full border border-white/20 text-[10px] font-semibold uppercase text-neutral-300">
+                  COMMERCIAL
+                </span>
+              </div>
+
+              <!-- Oversized Typographic Role Title -->
+              <h3 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight text-white leading-[0.92] mb-6">
+                SOCIAL MEDIA<br>MANAGER
+              </h3>
+
+              <!-- Narrative Summary -->
+              <p class="text-sm sm:text-base md:text-lg text-neutral-300 leading-relaxed max-w-2xl mb-8">
+                Created engaging visual content and social media graphics to strengthen TCET Open Source’s digital presence.
+              </p>
+
+              <!-- Milestone Specifications (Hairline Grid) -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10 max-w-3xl mb-8">
+                <div>
+                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">VISUAL CONTENT CREATION</div>
+                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Designed creative social media graphics.</div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">VIDEO EDITING</div>
+                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Edited short-form social media videos and reels to support digital engagement.</div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">GRAPHIC DESIGN</div>
+                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Assisted with content development and transformed ideas into engaging visuals.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= CHAPTER 03: LEARNING (2023 — 2024) ================= -->
+          <div data-exp-phase="SELF-DIRECTED LEARNING / FREELANCE" class="exp-panel relative flex-shrink-0 w-[105vw] md:w-[100vw] px-8 md:px-16 lg:px-24 flex flex-col justify-center">
+            <!-- Background Parallax Date Typography -->
+            <div
+              class="exp-date-bg absolute -top-8 right-12 md:right-28 text-[12vw] md:text-[14vw] font-black uppercase text-white/[0.04] tracking-tighter select-none pointer-events-none will-change-transform"
+              data-parallax-factor="0.15"
+            >
+              2023 — 2024
+            </div>
+
+            <div class="relative z-10 max-w-4xl">
+              <!-- Eyebrow & Date -->
+              <div class="flex items-center gap-4 mb-4">
+                <span class="text-xs font-semibold tracking-widest uppercase text-neutral-400">
+                  2023 — 2024
+                </span>
+                <span class="h-[1px] w-12 bg-white/20"></span>
+                <span class="text-xs font-bold tracking-widest uppercase text-white">
+                  SELF-DIRECTED LEARNING / FREELANCE
+                </span>
+              </div>
+
+              <!-- Oversized Typographic Role Title -->
+              <h3 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight text-white leading-[0.92] mb-6">
+                DIGITAL<br>COMMUNICATIONS
+              </h3>
+
+              <!-- Narrative Summary -->
+              <p class="text-sm sm:text-base md:text-lg text-neutral-300 leading-relaxed max-w-2xl mb-8">
+                Led digital communications and visual design initiatives, taking primary ownership of the club’s website design.
+              </p>
+
+              <!-- Milestone Specifications (Hairline Grid) -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10 max-w-3xl mb-8">
+                <div>
+                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">MILESTONE 01 — AWARD-WINNING WEBSITE</div>
+                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Led the design of the RCTCET website, which received the Best Website Award for 2023–24.</div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">MILESTONE 02 — DIGITAL CAMPAIGNS</div>
+                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Created media creatives, promotional banners, and visual assets for club events.</div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">MILESTONE 03</div>
+                  <div class="text-xs sm:text-sm text-neutral-200 font-medium leading-snug">Served as Digital Communications Director, contributing to the club’s overall digital presence and communication.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -985,24 +1033,24 @@
         <div class="flex items-center gap-2 sm:gap-4">
           <button
             type="button"
-            class="exp-jump-btn text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-md border border-white/20 text-white bg-white/10 transition-all hover:bg-white/20"
-            data-target-progress="0.30"
+            class="exp-jump-btn text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-md border border-white/5 text-neutral-500 hover:text-white transition-all hover:border-white/20"
+            data-exp-target="1"
           >
-            LEARNING
+            PROFESSIONAL
           </button>
           <button
             type="button"
             class="exp-jump-btn text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-md border border-white/5 text-neutral-500 hover:text-white transition-all hover:border-white/20"
-            data-target-progress="0.64"
+            data-exp-target="2"
           >
             FREELANCE
           </button>
           <button
             type="button"
             class="exp-jump-btn text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-md border border-white/5 text-neutral-500 hover:text-white transition-all hover:border-white/20"
-            data-target-progress="1"
+            data-exp-target="3"
           >
-            PROFESSIONAL
+            LEARNING
           </button>
         </div>
       </footer>
@@ -1091,15 +1139,15 @@
             </span>
             <span class="vp-hint" aria-hidden="true">Tap to flip</span>
           </button>
-          <button type="button" class="vp-card group pointer-events-auto block w-full max-w-[360px] aspect-[1900/862] rounded-3xl" style="transform: rotate(2deg);" aria-pressed="false" aria-label="Real Estate Voice Bot: flip card">
+          <button type="button" class="vp-card group pointer-events-auto block w-full max-w-[360px] aspect-[1900/862] rounded-3xl" style="transform: rotate(2deg);" aria-pressed="false" aria-label="Real Estate Client App: flip card">
             <span class="vp-flip">
               <span class="vp-face rounded-3xl overflow-hidden border border-neutral-200 shadow-xl bg-gradient-to-b from-neutral-50 via-neutral-100 to-neutral-200">
-                <img src="Project Images/Realestate voice bot.png" alt="Real Estate Voice Bot" loading="lazy" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105">
+                <img src="Project Images/Realestate voice bot.png" alt="Real Estate Client App" loading="lazy" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105">
               </span>
               <span class="vp-face vp-face--back rounded-3xl overflow-hidden border border-neutral-200 shadow-xl bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-300 flex flex-col items-center justify-center gap-3 px-6 text-center" aria-hidden="true">
                 <span class="text-[9px] md:text-[10px] font-semibold tracking-[0.3em] uppercase text-neutral-500">Exploration</span>
                 <span class="w-6 h-px bg-neutral-400"></span>
-                <span class="text-lg md:text-2xl font-medium tracking-[-0.01em] leading-tight text-neutral-900">Real Estate Voice Bot</span>
+                <span class="text-lg md:text-2xl font-medium tracking-[-0.01em] leading-tight text-neutral-900">Real Estate Client App</span>
               </span>
             </span>
             <span class="vp-hint" aria-hidden="true">Tap to flip</span>
@@ -1111,22 +1159,20 @@
 
   <!-- END: Visual Playground (Explorations) Section -->
 
-  <!-- BEGIN: Landing Pages Featured Projects (WorksWheel) Section -->
-  <section class="max-w-[1400px] mx-auto px-6 md:px-14 py-16" data-purpose="landing-pages-featured-projects" id="landing-pages">
-    <!-- Header with Title -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div>
-        <h2 class="text-3xl md:text-5xl font-black uppercase tracking-tight text-neutral-900">
-          PROJECT HIGHLIGHTS
-        </h2>
+  <!-- BEGIN: Project Highlights (Sticky Stacking Cards) Section -->
+  <section class="ps-section w-full" data-purpose="landing-pages-featured-projects" id="landing-pages">
+    <div class="max-w-[1400px] mx-auto px-6 md:px-14 py-16">
+      <!-- Header with Title -->
+      <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 class="text-3xl md:text-5xl font-black uppercase tracking-tight text-neutral-900">
+            PROJECT HIGHLIGHTS
+          </h2>
+        </div>
       </div>
-    </div>
 
-    <!-- WorksWheel 3D Container -->
-    <div class="w-full relative overflow-hidden" style="height: 640px; min-height: 520px;">
-      <div id="works-wheel-container" class="w-full h-full relative">
-        <!-- WorksWheel mounts here -->
-      </div>
+      <!-- Stacking cards mount here (project-stack.js). No overflow:hidden on any ancestor, or sticky stops working. -->
+      <div id="project-stack" class="relative"></div>
     </div>
   </section>
   <!-- END: Landing Pages Featured Projects Section -->
@@ -1169,6 +1215,12 @@
           image: 'assets/case_design_system.png',
           date: 'November 2026',
           href: 'https://aesthetic-chebakia-349870.netlify.app/'
+        },
+        {
+          title: 'Product Design Case Study (Deja Vu)',
+          image: 'Project Images/Deja Vu Hackathon.png',
+          date: 'November 2026',
+          href: 'https://storied-elf-7c0bce.netlify.app'
         }
       ];
 
@@ -1446,40 +1498,7 @@
     })();
   </script>
 
-  <!-- WorksWheel 3D Drum Reel Initialization -->
-  <script type="module">
-    import { initWorksWheel, DEFAULT_WORKS } from './works-wheel.js';
-
-    function startWorksWheel() {
-      const container = document.getElementById('works-wheel-container');
-      if (container) {
-        const wheelInstance = initWorksWheel(container, {
-          items: DEFAULT_WORKS,
-          label: "Works",
-          action: "View",
-          onSelect: (index, item) => {
-            if (item.href && item.href.startsWith('http')) {
-              window.open(item.href, '_blank', 'noopener,noreferrer');
-            } else if (window.openProjectModal) {
-              window.openProjectModal(item);
-            }
-          }
-        });
-        window.worksWheelInstance = wheelInstance;
-
-        const prevBtn = document.getElementById('works-wheel-prev-btn');
-        const nextBtn = document.getElementById('works-wheel-next-btn');
-        if (prevBtn) prevBtn.addEventListener('click', () => wheelInstance.prev());
-        if (nextBtn) nextBtn.addEventListener('click', () => wheelInstance.next());
-      }
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', startWorksWheel);
-    } else {
-      startWorksWheel();
-    }
-  </script>
+  <script type="module" src="./project-stack.js"></script>
   <script type="module" src="./scroll-expand-media.js"></script>
   <script type="module" src="./experience-section.js"></script>
 </body>

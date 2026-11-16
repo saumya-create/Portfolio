@@ -10,7 +10,7 @@ Personal portfolio of **Saumya Mishra**, a UI/UX designer crafting intuitive dig
 - **About Me** — scroll-driven media expansion.
 - **Experience** — horizontal, scroll-linked timeline (Foundation & Journey).
 - **Things I Have Designed** — six exploration cards with a 3D flip interaction.
-- **Project Highlights** — 3D drum reel of featured projects, each linking to its live site or Figma file.
+- **Project Highlights** — sticky stacking cards of featured projects, each linking to its live site or Figma file.
 - **Case Studies** — in-depth write-ups that open in a new tab.
 - **Let's Talk** — LinkedIn and email contact.
 
@@ -26,8 +26,8 @@ Personal portfolio of **Saumya Mishra**, a UI/UX designer crafting intuitive dig
 ├── index.html               # Page layout, styles and inline scripts
 ├── experience-section.js    # Horizontal experience timeline
 ├── scroll-expand-media.js   # About section scroll expansion
-├── works-wheel.js           # Project Highlights drum reel and its project data
-├── assets/                  # About imagery, case-study thumbnails, scroll runtime
+├── project-stack.js         # Project Highlights stacking cards and their project data
+├── assets/                  # About imagery, case-study thumbnails
 └── Project Images/          # Project screenshots
 ```
 

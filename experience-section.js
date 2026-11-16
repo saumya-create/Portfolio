@@ -1,217 +1,149 @@
 /**
  * ExperienceSection — "Where I've Been"
- * Immersive Horizontal Spatial Canvas controlled by Vertical Scroll
- * Powered by @fiddle-digital/string-tune runtime
+ * Horizontal timeline driven by native vertical scroll.
+ *
+ * The stage position is derived directly from the scroll position every frame
+ * (no lerp/inertia), so it can never lag behind the page. That lag is what used
+ * to let the section unpin — and the Explorations section scroll in — before
+ * the last chapter had arrived.
+ *
+ * The vertical track is split into:
+ *   [0, HOLD_START)              intro rests before moving
+ *   [HOLD_START, 1 - HOLD_END]   horizontal travel, 1:1 with scroll
+ *   (1 - HOLD_END, 1]            last chapter rests fully in view before unpinning
  */
 
-export async function initExperienceSection() {
-  const section = document.getElementById('experience');
-  if (!section) return;
+const HOLD_START = 0.04;
+const HOLD_END = 0.12;
+const TRAVEL = 1 - HOLD_START - HOLD_END;
 
+const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+export function initExperienceSection() {
+  const section = document.getElementById('experience');
   const stage = document.getElementById('exp-horizontal-stage');
-  if (!stage) return;
+  const viewport = document.getElementById('exp-sticky-viewport');
+  if (!section || !stage || !viewport) return;
 
   const tickerTop = document.getElementById('exp-ticker-top');
   const tickerBottom = document.getElementById('exp-ticker-bottom');
   const hudProgress = document.getElementById('exp-hud-progress');
   const hudPhase = document.getElementById('exp-hud-phase');
-  const dateBgs = document.querySelectorAll('.exp-date-bg');
-  const jumpButtons = document.querySelectorAll('.exp-jump-btn');
+  const dateBgs = Array.from(section.querySelectorAll('.exp-date-bg'));
+  const panels = Array.from(stage.querySelectorAll('.exp-panel'));
+  const jumpButtons = Array.from(section.querySelectorAll('.exp-jump-btn'));
 
-  // Check reduced motion preference
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  // Resolve StringTune runtime from ES module or global UMD fallback
-  let StringTuneClass = null;
-  let StringProgress = null;
-  let StringProgressPart = null;
-  let StringParallax = null;
-  let StringMagnetic = null;
+  // Geometry (measured, never assumed — panel widths differ between mobile and desktop)
+  let totalDist = 0;    // vertical scroll distance while pinned
+  let maxTranslate = 0; // horizontal distance the stage travels
+  let stops = [];       // stage translate at which each panel is aligned to the left edge
 
-  try {
-    const mod = await import('./assets/string-tune.mjs');
-    StringTuneClass = mod.StringTune || mod.default;
-    StringProgress = mod.StringProgress;
-    StringProgressPart = mod.StringProgressPart;
-    StringParallax = mod.StringParallax;
-    StringMagnetic = mod.StringMagnetic;
-  } catch (err) {
-    console.warn('[Experience] Falling back to global window.StringTune:', err);
-    const ST = window.StringTune?.StringTune || window.StringTune;
-    if (ST) {
-      StringTuneClass = ST;
-      StringProgress = window.StringTune.StringProgress || ST.StringProgress;
-      StringProgressPart = window.StringTune.StringProgressPart || ST.StringProgressPart;
-      StringParallax = window.StringTune.StringParallax || ST.StringParallax;
-      StringMagnetic = window.StringTune.StringMagnetic || ST.StringMagnetic;
-    }
+  function measure() {
+    // Use the sticky viewport's real height (100dvh) rather than innerHeight so
+    // mobile URL-bar resizing can't skew the track length.
+    totalDist = Math.max(0, section.offsetHeight - viewport.offsetHeight);
+    // Travel ends when the last panel's right edge meets the viewport's right edge.
+    // (scrollWidth is not used: overflowing content inside a panel inflates it.)
+    const last = panels[panels.length - 1];
+    maxTranslate = last
+      ? Math.max(0, last.offsetLeft + last.offsetWidth - viewport.clientWidth)
+      : 0;
+    stops = panels.map((p) => Math.min(p.offsetLeft, maxTranslate));
   }
 
-  let stringTune = null;
-  if (StringTuneClass) {
-    stringTune = typeof StringTuneClass.getInstance === 'function'
-      ? StringTuneClass.getInstance()
-      : StringTuneClass;
+  let activeIndex = -1;
 
-    // STRICT REQUIREMENT: Keep native browser scrolling 100% active and unblocked
-    stringTune.scrollDesktopMode = 'default';
-    stringTune.scrollMobileMode = 'default';
+  function setActive(index) {
+    if (index === activeIndex) return;
+    activeIndex = index;
 
-    if (StringProgress) stringTune.use(StringProgress);
-    if (StringProgressPart) stringTune.use(StringProgressPart);
-    if (StringParallax) stringTune.use(StringParallax);
-    if (StringMagnetic) stringTune.use(StringMagnetic);
-
-    try {
-      stringTune.start(60);
-    } catch (e) {
-      // Runtime already active
+    if (hudPhase && panels[index]) {
+      hudPhase.textContent = panels[index].dataset.expPhase || '';
     }
 
-    // Re-assert default mode post-start
-    stringTune.scrollDesktopMode = 'default';
-    stringTune.scrollMobileMode = 'default';
+    jumpButtons.forEach((btn) => {
+      const isCurrent = Number(btn.dataset.expTarget) === index;
+      btn.classList.toggle('text-white', isCurrent);
+      btn.classList.toggle('bg-white/20', isCurrent);
+      btn.classList.toggle('border-white/40', isCurrent);
+      btn.classList.toggle('text-neutral-500', !isCurrent);
+      btn.classList.toggle('border-white/5', !isCurrent);
+      if (isCurrent) btn.setAttribute('aria-current', 'step');
+      else btn.removeAttribute('aria-current');
+    });
   }
 
-  // Camera & Interpolation Physics
-  let currentTranslateX = 0;
-  let targetTranslateX = 0;
-  let currentProgress = 0;
-  let targetProgress = 0;
-  let isTicking = false;
-
-  // Compute maximum horizontal travel based on canvas geometry
-  function getDimensions() {
-    const totalDist = section.offsetHeight - window.innerHeight;
-    const stageWidth = stage.scrollWidth;
-    const maxTranslate = Math.max(0, stageWidth - window.innerWidth);
-    return { totalDist, maxTranslate };
-  }
-
-  let { totalDist, maxTranslate } = getDimensions();
-  window.addEventListener('resize', () => {
-    ({ totalDist, maxTranslate } = getDimensions());
-    if (prefersReducedMotion) {
+  function render() {
+    rafId = 0;
+    if (reducedMotion.matches) {
       stage.style.transform = 'none';
-    }
-  }, { passive: true });
-
-  // Update loop for 60/120 FPS camera interpolation
-  function renderFrame() {
-    isTicking = false;
-
-    if (prefersReducedMotion) {
       return;
     }
 
-    // Smooth inertia lerp (0.09 factor gives tactile, responsive feel)
-    currentProgress += (targetProgress - currentProgress) * 0.09;
-    currentTranslateX += (targetTranslateX - currentTranslateX) * 0.09;
+    const scrolled = -section.getBoundingClientRect().top;
+    const raw = totalDist > 0 ? clamp01(scrolled / totalDist) : 0;
+    const progress = clamp01((raw - HOLD_START) / TRAVEL);
+    const x = -progress * maxTranslate;
 
-    // 1. Move Horizontal Camera / Stage
-    stage.style.transform = `translate3d(${currentTranslateX.toFixed(2)}px, 0, 0)`;
+    stage.style.transform = `translate3d(${x.toFixed(2)}px, 0, 0)`;
 
-    // 2. Parallax Drift for Large Background Typography Dates
-    dateBgs.forEach(dateEl => {
-      const factor = parseFloat(dateEl.getAttribute('data-parallax-factor') || '0.15');
-      const dateOffset = -currentTranslateX * factor;
-      dateEl.style.transform = `translate3d(${dateOffset.toFixed(2)}px, 0, 0)`;
-    });
-
-    // 3. Counter-drifting Background Tickers
-    if (tickerTop) {
-      const topOffset = currentTranslateX * 0.35;
-      tickerTop.style.transform = `translate3d(${topOffset.toFixed(2)}px, 0, 0)`;
+    for (const el of dateBgs) {
+      const factor = parseFloat(el.dataset.parallaxFactor || '0.15');
+      el.style.transform = `translate3d(${(-x * factor).toFixed(2)}px, 0, 0)`;
     }
-    if (tickerBottom) {
-      const bottomOffset = -currentTranslateX * 0.25;
-      tickerBottom.style.transform = `translate3d(${bottomOffset.toFixed(2)}px, 0, 0)`;
-    }
+    if (tickerTop) tickerTop.style.transform = `translate3d(${(x * 0.35).toFixed(2)}px, 0, 0)`;
+    if (tickerBottom) tickerBottom.style.transform = `translate3d(${(-x * 0.25).toFixed(2)}px, 0, 0)`;
+    if (hudProgress) hudProgress.style.width = `${(progress * 100).toFixed(1)}%`;
 
-    // 4. Update HUD Progress Bar
-    if (hudProgress) {
-      hudProgress.style.width = `${(currentProgress * 100).toFixed(1)}%`;
+    // Active chapter = the panel whose stop is closest to the current position
+    const pos = -x;
+    let nearest = 0;
+    for (let i = 1; i < stops.length; i++) {
+      if (Math.abs(stops[i] - pos) < Math.abs(stops[nearest] - pos)) nearest = i;
     }
-
-    // 5. Update HUD Phase Title
-    if (hudPhase) {
-      // Chapter starts (stage 390vw, travel 290vw): 01 ≈ 0.29, 02 ≈ 0.64, 03 ≈ 0.98
-      if (currentProgress < 0.15) {
-        hudPhase.textContent = "ORIGIN & FOUNDATIONS";
-      } else if (currentProgress < 0.47) {
-        hudPhase.textContent = "SELF-DIRECTED LEARNING / FREELANCE";
-      } else if (currentProgress < 0.81) {
-        hudPhase.textContent = "FREELANCE / INDEPENDENT";
-      } else {
-        hudPhase.textContent = "PROFESSIONAL";
-      }
-    }
-
-    // 6. Highlight active bottom jump button
-    jumpButtons.forEach(btn => {
-      const btnTarget = parseFloat(btn.getAttribute('data-target-progress') || '0');
-      const isCurrent = Math.abs(currentProgress - btnTarget) < 0.17;
-      if (isCurrent) {
-        btn.classList.add('text-white', 'bg-white/20', 'border-white/40');
-        btn.classList.remove('text-neutral-500', 'border-white/5');
-      } else {
-        btn.classList.remove('text-white', 'bg-white/20', 'border-white/40');
-        btn.classList.add('text-neutral-500', 'border-white/5');
-      }
-    });
-
-    // Keep loop active until settle
-    if (Math.abs(targetTranslateX - currentTranslateX) > 0.1 || Math.abs(targetProgress - currentProgress) > 0.001) {
-      requestAnimationFrame(renderFrame);
-      isTicking = true;
-    }
+    setActive(nearest);
   }
 
-  // Scroll listener computing normalized progress (0.0 to 1.0)
-  function onScroll() {
-    const rect = section.getBoundingClientRect();
-    const scrolled = -rect.top;
-
-    if (totalDist <= 0) return;
-
-    // Normalized progress within the section's vertical travel track
-    const rawProgress = scrolled / totalDist;
-    targetProgress = Math.min(Math.max(rawProgress, 0), 1);
-    targetTranslateX = -targetProgress * maxTranslate;
-
-    if (!isTicking) {
-      isTicking = true;
-      requestAnimationFrame(renderFrame);
-    }
+  let rafId = 0;
+  function requestRender() {
+    if (!rafId) rafId = requestAnimationFrame(render);
   }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-
-  // Connect StringTune event dispatcher if available
-  if (stringTune) {
-    stringTune.on('scroll', onScroll);
+  function remeasure() {
+    measure();
+    requestRender();
   }
 
-  // Interactive Chapter Jump Click Handlers
-  jumpButtons.forEach(btn => {
+  window.addEventListener('scroll', requestRender, { passive: true });
+  window.addEventListener('resize', remeasure, { passive: true });
+  window.addEventListener('load', remeasure);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure);
+  if ('ResizeObserver' in window) {
+    const ro = new ResizeObserver(remeasure);
+    ro.observe(stage);
+    ro.observe(viewport);
+  }
+  reducedMotion.addEventListener?.('change', remeasure);
+
+  // Chapter jump buttons: scroll the page to the point where that panel is aligned
+  jumpButtons.forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const p = parseFloat(btn.getAttribute('data-target-progress') || '0');
+      const index = Number(btn.dataset.expTarget);
+      if (!panels[index]) return;
+      measure();
+      const progress = maxTranslate > 0 ? stops[index] / maxTranslate : 0;
+      const raw = HOLD_START + progress * TRAVEL;
       const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-      const targetScroll = sectionTop + p * totalDist;
-
-      window.scrollTo({
-        top: targetScroll,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: sectionTop + raw * totalDist, behavior: 'smooth' });
     });
   });
 
-  // Initial calculation
-  onScroll();
+  remeasure();
 }
 
-// Auto-boot upon DOM ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initExperienceSection);
 } else {
